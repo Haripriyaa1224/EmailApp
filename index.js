@@ -1,5 +1,8 @@
 const express = require('express');
 const nodemailer = require('nodemailer');
+const dotenv = require('dotenv');
+
+dotenv.config();
 
 const app = express();
 const port = 10000;
@@ -80,20 +83,26 @@ app.get('/', (req, res) => {
   `)
 })
 
-
+// console.log(process.env.SMTP_HOST)
 app.post('/send-email', (req, res) => {
   // console.log(req.body);
   const { email, subject, message } = req.body
 
+
+
   //Config mailer
 const transporter = nodemailer.createTransport({
-  host: 'localhost', // Replace with your provider's SMTP server
-  port: 1025, // Port may vary depending on your provider
-  secure: false, // Use true for TLS, false for non-TLS (consult your provider)
+  host: process.env.SMTP_HOST, // Replace with your provider's SMTP server
+  port: parseInt(process.env.SMTP_PORT, 10),
+  secure: false, // true for 465, false for other ports
+  auth: {
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS,
+  }
 });
 
 const mailOptions = {
-  from: 'me@yahoo.com', // Replace with your email address
+  from: process.env.SMTP_USER, // Replace with your email address
   to: email, // Replace with the recipient's email address
   subject: subject, // Replace with your desired subject
   text: message, // Plain text content
